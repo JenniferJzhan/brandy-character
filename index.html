@@ -157,54 +157,97 @@
         function toggleCamera() {
             const btn = document.getElementById('camera-btn');
             
+            // Wait for inputHandler to be initialized
+            if (typeof inputHandler === 'undefined') {
+                alert('Please wait for the app to load...');
+                return;
+            }
+            
             if (inputHandler.cameraEnabled) {
                 inputHandler.disableCamera();
                 btn.classList.remove('active');
                 btn.textContent = '📷 Camera';
                 console.log('Camera disabled');
             } else {
+                console.log('Enabling camera...');
                 inputHandler.enableCamera();
                 btn.classList.add('active');
                 btn.textContent = '📷 Camera ON';
-                console.log('Camera enabled');
+                
+                // Show loading message
+                setTimeout(() => {
+                    if (inputHandler.cameraReady) {
+                        alert('Camera ready! Show your hand to the camera.');
+                    }
+                }, 2000);
             }
         }
         
         function enableMotion() {
             const btn = document.getElementById('motion-btn');
             
+            // Wait for inputHandler to be initialized
+            if (typeof inputHandler === 'undefined') {
+                alert('Please wait for the app to load...');
+                return;
+            }
+            
             if (!inputHandler.motionEnabled) {
                 inputHandler.enableMotion();
                 btn.classList.add('active');
                 btn.textContent = '📱 Motion ON';
-                console.log('Motion enabled');
+                console.log('Motion enabled - shake your phone!');
+                alert('Motion enabled! Try shaking your phone.');
             }
         }
         
         function showHelp() {
-            const helpText = `
-🐱 BRANDY - HOW TO INTERACT
+            const helpText = `🐱 BRANDY - HOW TO INTERACT
 
 TOUCH:
 • Tap = Poke Brandy
 • Hold = Gentle petting
 
-CAMERA (if enabled):
-• Open palm 👋 = Gentle
-• Pointing finger 👉 = Poke
+CAMERA:
+• Tap 📷 button to enable
+• Show open palm 👋 = Gentle
+• Point finger 👉 = Poke
 
-MOTION (if enabled):
+MOTION:
+• Tap 📱 button to enable
 • Shake phone = Surprise
 
 TIPS:
-• Watch Brandy's mood in top-left
+• Watch mood in top-left corner
 • Poke too much = angry!
 • Gentle touch = happy
-• Time of day affects energy
-            `;
+• Time affects energy level`;
             
             alert(helpText);
         }
+        
+        // Add event listeners after page loads
+        window.addEventListener('load', () => {
+            console.log('Mobile controls ready');
+            
+            // Update button states if features are already enabled
+            setInterval(() => {
+                if (typeof inputHandler !== 'undefined') {
+                    const cameraBtn = document.getElementById('camera-btn');
+                    const motionBtn = document.getElementById('motion-btn');
+                    
+                    if (inputHandler.cameraEnabled && !cameraBtn.classList.contains('active')) {
+                        cameraBtn.classList.add('active');
+                        cameraBtn.textContent = '📷 Camera ON';
+                    }
+                    
+                    if (inputHandler.motionEnabled && !motionBtn.classList.contains('active')) {
+                        motionBtn.classList.add('active');
+                        motionBtn.textContent = '📱 Motion ON';
+                    }
+                }
+            }, 1000);
+        });
     </script>
 </body>
 </html>
