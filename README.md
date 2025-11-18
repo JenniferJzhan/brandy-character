@@ -158,12 +158,6 @@ This project fulfills all requirements for the "Building Character(s)" assignmen
 - [ ] Mini-games
 - [ ] Achievement system
 
-## 👤 Author
-
-**Issaka Fadil**
-- GitHub: [@Issakafadil](https://github.com/Issakafadil)
-- Project: [brandy-character](https://github.com/Issakafadil/brandy-character)
-
 ##  Acknowledgments
 
 - **OCAD University** - Course instruction and support
