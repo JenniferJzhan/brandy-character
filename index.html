@@ -89,6 +89,9 @@
             transition: all 0.3s ease;
             min-width: 120px;
             text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .control-btn:active {
@@ -129,13 +132,13 @@
     
     <!-- Mobile Control Buttons -->
     <div id="mobile-controls">
-        <button id="camera-btn" class="control-btn" onclick="toggleCamera()">
+        <button id="camera-btn" class="control-btn">
             📷 Camera
         </button>
-        <button id="motion-btn" class="control-btn" onclick="enableMotion()">
+        <button id="motion-btn" class="control-btn">
             📱 Motion
         </button>
-        <button id="help-btn" class="control-btn" onclick="showHelp()">
+        <button id="help-btn" class="control-btn">
             ❓ Help
         </button>
     </div>
@@ -152,57 +155,124 @@
     <!-- Main Sketch -->
     <script src="sketch.js"></script>
     
-    <!-- Mobile Control Functions -->
+    <!-- Mobile Control Functions - IMPROVED -->
     <script>
-        function toggleCamera() {
-            const btn = document.getElementById('camera-btn');
+        // Wait for everything to be fully loaded
+        window.addEventListener('load', function() {
+            console.log('Page fully loaded, setting up mobile controls...');
             
-            // Wait for inputHandler to be initialized
-            if (typeof inputHandler === 'undefined') {
-                alert('Please wait for the app to load...');
-                return;
-            }
+            // Wait a bit for p5.js to initialize
+            setTimeout(setupMobileControls, 500);
+        });
+        
+        function setupMobileControls() {
+            console.log('Setting up mobile control buttons...');
             
-            if (inputHandler.cameraEnabled) {
-                inputHandler.disableCamera();
-                btn.classList.remove('active');
-                btn.textContent = '📷 Camera';
-                console.log('Camera disabled');
-            } else {
-                console.log('Enabling camera...');
-                inputHandler.enableCamera();
-                btn.classList.add('active');
-                btn.textContent = '📷 Camera ON';
+            const cameraBtn = document.getElementById('camera-btn');
+            const motionBtn = document.getElementById('motion-btn');
+            const helpBtn = document.getElementById('help-btn');
+            
+            // Camera button with improved handling
+            if (cameraBtn) {
+                // Remove any existing listeners
+                const newCameraBtn = cameraBtn.cloneNode(true);
+                cameraBtn.parentNode.replaceChild(newCameraBtn, cameraBtn);
                 
-                // Show loading message
-                setTimeout(() => {
-                    if (inputHandler.cameraReady) {
-                        alert('Camera ready! Show your hand to the camera.');
+                newCameraBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Camera button clicked');
+                    
+                    // Check if inputHandler exists
+                    if (typeof inputHandler === 'undefined' || !inputHandler) {
+                        alert('⏳ Loading... Please wait a moment and try again.');
+                        console.log('inputHandler not ready yet');
+                        return;
                     }
-                }, 2000);
+                    
+                    if (inputHandler.cameraEnabled) {
+                        // Disable camera
+                        console.log('Disabling camera...');
+                        inputHandler.disableCamera();
+                        newCameraBtn.classList.remove('active');
+                        newCameraBtn.textContent = '📷 Camera';
+                        console.log('✅ Camera disabled');
+                    } else {
+                        // Enable camera
+                        console.log('Enabling camera...');
+                        newCameraBtn.textContent = '⏳ Loading...';
+                        newCameraBtn.disabled = true;
+                        
+                        try {
+                            await inputHandler.enableCamera();
+                            newCameraBtn.classList.add('active');
+                            newCameraBtn.textContent = '📷 Camera ON';
+                            newCameraBtn.disabled = false;
+                            console.log('✅ Camera enabled successfully');
+                            
+                            // Show instructions after a delay
+                            setTimeout(() => {
+                                if (inputHandler.cameraReady) {
+                                    alert('📷 Camera ready!\n\nShow your hand:\n👋 Open palm = Gentle\n👉 Point = Poke');
+                                }
+                            }, 2000);
+                        } catch (error) {
+                            console.error('❌ Failed to enable camera:', error);
+                            newCameraBtn.textContent = '📷 Camera';
+                            newCameraBtn.disabled = false;
+                        }
+                    }
+                }, false);
+                
+                console.log('✅ Camera button handler attached');
             }
-        }
-        
-        function enableMotion() {
-            const btn = document.getElementById('motion-btn');
             
-            // Wait for inputHandler to be initialized
-            if (typeof inputHandler === 'undefined') {
-                alert('Please wait for the app to load...');
-                return;
+            // Motion button
+            if (motionBtn) {
+                const newMotionBtn = motionBtn.cloneNode(true);
+                motionBtn.parentNode.replaceChild(newMotionBtn, motionBtn);
+                
+                newMotionBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Motion button clicked');
+                    
+                    // Check if inputHandler exists
+                    if (typeof inputHandler === 'undefined' || !inputHandler) {
+                        alert('⏳ Loading... Please wait a moment and try again.');
+                        console.log('inputHandler not ready yet');
+                        return;
+                    }
+                    
+                    if (!inputHandler.motionEnabled) {
+                        console.log('Enabling motion...');
+                        await inputHandler.enableMotion();
+                        newMotionBtn.classList.add('active');
+                        newMotionBtn.textContent = '📱 Motion ON';
+                        console.log('✅ Motion enabled');
+                        alert('📱 Motion enabled!\n\nTry shaking your phone to surprise Brandy!');
+                    } else {
+                        console.log('Motion already enabled');
+                    }
+                }, false);
+                
+                console.log('✅ Motion button handler attached');
             }
             
-            if (!inputHandler.motionEnabled) {
-                inputHandler.enableMotion();
-                btn.classList.add('active');
-                btn.textContent = '📱 Motion ON';
-                console.log('Motion enabled - shake your phone!');
-                alert('Motion enabled! Try shaking your phone.');
-            }
-        }
-        
-        function showHelp() {
-            const helpText = `🐱 BRANDY - HOW TO INTERACT
+            // Help button
+            if (helpBtn) {
+                const newHelpBtn = helpBtn.cloneNode(true);
+                helpBtn.parentNode.replaceChild(newHelpBtn, helpBtn);
+                
+                newHelpBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Help button clicked');
+                    
+                    const helpText = `🐱 BRANDY - HOW TO INTERACT
 
 TOUCH:
 • Tap = Poke Brandy
@@ -218,36 +288,19 @@ MOTION:
 • Shake phone = Surprise
 
 TIPS:
-• Watch mood in top-left corner
+• Watch mood in top-left
 • Poke too much = angry!
 • Gentle touch = happy
-• Time affects energy level`;
+• Time affects energy`;
+                    
+                    alert(helpText);
+                }, false);
+                
+                console.log('✅ Help button handler attached');
+            }
             
-            alert(helpText);
+            console.log('✅ All mobile controls ready');
         }
-        
-        // Add event listeners after page loads
-        window.addEventListener('load', () => {
-            console.log('Mobile controls ready');
-            
-            // Update button states if features are already enabled
-            setInterval(() => {
-                if (typeof inputHandler !== 'undefined') {
-                    const cameraBtn = document.getElementById('camera-btn');
-                    const motionBtn = document.getElementById('motion-btn');
-                    
-                    if (inputHandler.cameraEnabled && !cameraBtn.classList.contains('active')) {
-                        cameraBtn.classList.add('active');
-                        cameraBtn.textContent = '📷 Camera ON';
-                    }
-                    
-                    if (inputHandler.motionEnabled && !motionBtn.classList.contains('active')) {
-                        motionBtn.classList.add('active');
-                        motionBtn.textContent = '📱 Motion ON';
-                    }
-                }
-            }, 1000);
-        });
     </script>
 </body>
 </html>
