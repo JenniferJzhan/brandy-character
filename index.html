@@ -65,55 +65,59 @@
             display: none !important;
         }
         
-        /* Mobile Control Buttons */
+        /* Mobile Control Buttons - FIXED FOR MOBILE */
         #mobile-controls {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             right: 10px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            z-index: 100;
+            z-index: 10000;
+            pointer-events: none;
         }
         
         .control-btn {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 50px;
-            padding: 12px 20px;
+            padding: 14px 22px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
             min-width: 120px;
             text-align: center;
             user-select: none;
             -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
+            pointer-events: auto;
+            touch-action: manipulation;
         }
         
         .control-btn:active {
-            transform: scale(0.95);
-            background: rgba(0, 0, 0, 0.9);
+            transform: scale(0.92);
+            background: rgba(0, 0, 0, 0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
         
         .control-btn.active {
-            background: rgba(0, 200, 100, 0.8);
-            border-color: rgba(0, 255, 100, 0.8);
+            background: rgba(0, 200, 100, 0.85);
+            border-color: rgba(0, 255, 100, 0.9);
         }
         
         @media (max-width: 600px) {
             #mobile-controls {
-                bottom: 10px;
+                bottom: 15px;
                 right: 10px;
             }
             
             .control-btn {
-                padding: 10px 16px;
+                padding: 12px 18px;
                 font-size: 14px;
-                min-width: 100px;
+                min-width: 110px;
             }
         }
     </style>
@@ -155,13 +159,16 @@
     <!-- Main Sketch -->
     <script src="sketch.js"></script>
     
-    <!-- Mobile Control Functions - IMPROVED -->
+    <!-- Mobile Control Functions - MOBILE OPTIMIZED -->
     <script>
+        // Track if button was touched to prevent canvas interaction
+        let buttonTouched = false;
+        
         // Wait for everything to be fully loaded
         window.addEventListener('load', function() {
             console.log('Page fully loaded, setting up mobile controls...');
             
-            // Wait a bit for p5.js to initialize
+            // Wait for p5.js to initialize
             setTimeout(setupMobileControls, 500);
         });
         
@@ -172,105 +179,107 @@
             const motionBtn = document.getElementById('motion-btn');
             const helpBtn = document.getElementById('help-btn');
             
-            // Camera button with improved handling
+            // Camera button
             if (cameraBtn) {
-                // Remove any existing listeners
-                const newCameraBtn = cameraBtn.cloneNode(true);
-                cameraBtn.parentNode.replaceChild(newCameraBtn, cameraBtn);
-                
-                newCameraBtn.addEventListener('click', async function(e) {
+                const handleCamera = async function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    buttonTouched = true;
                     
-                    console.log('Camera button clicked');
+                    console.log('📷 Camera button activated');
                     
-                    // Check if inputHandler exists
                     if (typeof inputHandler === 'undefined' || !inputHandler) {
-                        alert(' Loading... Please wait a moment and try again.');
-                        console.log('inputHandler not ready yet');
+                        alert('⏳ Loading... Please wait and try again.');
+                        setTimeout(() => { buttonTouched = false; }, 200);
                         return;
                     }
                     
                     if (inputHandler.cameraEnabled) {
-                        // Disable camera
                         console.log('Disabling camera...');
                         inputHandler.disableCamera();
-                        newCameraBtn.classList.remove('active');
-                        newCameraBtn.textContent = '📷 Camera';
-                        console.log('Camera disabled');
+                        cameraBtn.classList.remove('active');
+                        cameraBtn.textContent = '📷 Camera';
                     } else {
-                        // Enable camera
                         console.log('Enabling camera...');
-                        newCameraBtn.textContent = '⏳ Loading...';
-                        newCameraBtn.disabled = true;
+                        cameraBtn.textContent = '⏳ Loading...';
+                        cameraBtn.disabled = true;
                         
                         try {
                             await inputHandler.enableCamera();
-                            newCameraBtn.classList.add('active');
-                            newCameraBtn.textContent = '📷 Camera ON';
-                            newCameraBtn.disabled = false;
-                            console.log(' Camera enabled successfully');
+                            cameraBtn.classList.add('active');
+                            cameraBtn.textContent = '📷 Camera ON';
+                            cameraBtn.disabled = false;
+                            console.log('✅ Camera enabled');
                             
-                            // Show instructions after a delay
                             setTimeout(() => {
                                 if (inputHandler.cameraReady) {
-                                    alert('📷 Camera ready!\n\nShow your hand:\n👋 Open palm = Gentle\n👉 Point = Poke');
+                                    alert('📷 Camera ready!\n\n👋 Open palm = Gentle\n👉 Point = Poke');
                                 }
-                            }, 2000);
+                            }, 1500);
                         } catch (error) {
-                            console.error(' Failed to enable camera:', error);
-                            newCameraBtn.textContent = '📷 Camera';
-                            newCameraBtn.disabled = false;
+                            console.error('❌ Camera error:', error);
+                            cameraBtn.textContent = '📷 Camera';
+                            cameraBtn.disabled = false;
+                            alert('Camera failed: ' + error.message);
                         }
                     }
-                }, false);
+                    
+                    setTimeout(() => { buttonTouched = false; }, 200);
+                };
                 
-                console.log(' Camera button handler attached');
+                // Add touchstart (primary for mobile) and click (fallback)
+                cameraBtn.addEventListener('touchstart', handleCamera, { passive: false });
+                cameraBtn.addEventListener('click', handleCamera);
+                console.log('✅ Camera button ready');
             }
             
             // Motion button
             if (motionBtn) {
-                const newMotionBtn = motionBtn.cloneNode(true);
-                motionBtn.parentNode.replaceChild(newMotionBtn, motionBtn);
-                
-                newMotionBtn.addEventListener('click', async function(e) {
+                const handleMotion = async function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    buttonTouched = true;
                     
-                    console.log('Motion button clicked');
+                    console.log('📱 Motion button activated');
                     
-                    // Check if inputHandler exists
                     if (typeof inputHandler === 'undefined' || !inputHandler) {
-                        alert('⏳ Loading... Please wait a moment and try again.');
-                        console.log('inputHandler not ready yet');
+                        alert('⏳ Loading... Please wait and try again.');
+                        setTimeout(() => { buttonTouched = false; }, 200);
                         return;
                     }
                     
                     if (!inputHandler.motionEnabled) {
                         console.log('Enabling motion...');
-                        await inputHandler.enableMotion();
-                        newMotionBtn.classList.add('active');
-                        newMotionBtn.textContent = '📱 Motion ON';
-                        console.log(' Motion enabled');
-                        alert('📱 Motion enabled!\n\nTry shaking your phone to surprise Brandy!');
+                        try {
+                            await inputHandler.enableMotion();
+                            motionBtn.classList.add('active');
+                            motionBtn.textContent = '📱 Motion ON';
+                            console.log('✅ Motion enabled');
+                            alert('📱 Motion enabled!\n\nShake your phone to surprise Brandy!');
+                        } catch (error) {
+                            console.error('Motion error:', error);
+                            alert('Motion failed: ' + error.message);
+                        }
                     } else {
                         console.log('Motion already enabled');
                     }
-                }, false);
+                    
+                    setTimeout(() => { buttonTouched = false; }, 200);
+                };
                 
-                console.log('Motion button handler attached');
+                motionBtn.addEventListener('touchstart', handleMotion, { passive: false });
+                motionBtn.addEventListener('click', handleMotion);
+                console.log('✅ Motion button ready');
             }
             
             // Help button
             if (helpBtn) {
-                const newHelpBtn = helpBtn.cloneNode(true);
-                helpBtn.parentNode.replaceChild(newHelpBtn, helpBtn);
-                
-                newHelpBtn.addEventListener('click', function(e) {
+                const handleHelp = function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    buttonTouched = true;
                     
-                    console.log('Help button clicked');
+                    console.log('❓ Help button activated');
                     
                     const helpText = `🐱 BRANDY - HOW TO INTERACT
 
@@ -294,12 +303,16 @@ TIPS:
 • Time affects energy`;
                     
                     alert(helpText);
-                }, false);
+                    
+                    setTimeout(() => { buttonTouched = false; }, 200);
+                };
                 
-                console.log('Help button handler attached');
+                helpBtn.addEventListener('touchstart', handleHelp, { passive: false });
+                helpBtn.addEventListener('click', handleHelp);
+                console.log('✅ Help button ready');
             }
             
-            console.log('All mobile controls ready');
+            console.log('✅ All mobile controls initialized');
         }
     </script>
 </body>
