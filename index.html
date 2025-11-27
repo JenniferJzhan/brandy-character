@@ -209,7 +209,7 @@
                             cameraBtn.classList.add('active');
                             cameraBtn.textContent = '📷 Camera ON';
                             cameraBtn.disabled = false;
-                            console.log('✅ Camera enabled');
+                            console.log(' Camera enabled');
                             
                             setTimeout(() => {
                                 if (inputHandler.cameraReady) {
@@ -217,7 +217,7 @@
                                 }
                             }, 1500);
                         } catch (error) {
-                            console.error('❌ Camera error:', error);
+                            console.error('Camera error:', error);
                             cameraBtn.textContent = '📷 Camera';
                             cameraBtn.disabled = false;
                             alert('Camera failed: ' + error.message);
@@ -230,7 +230,7 @@
                 // Add touchstart (primary for mobile) and click (fallback)
                 cameraBtn.addEventListener('touchstart', handleCamera, { passive: false });
                 cameraBtn.addEventListener('click', handleCamera);
-                console.log('✅ Camera button ready');
+                console.log('Camera button ready');
             }
             
             // Motion button
@@ -253,9 +253,9 @@
                         try {
                             await inputHandler.enableMotion();
                             motionBtn.classList.add('active');
-                            motionBtn.textContent = '📱 Motion ON';
-                            console.log('✅ Motion enabled');
-                            alert('📱 Motion enabled!\n\nShake your phone to surprise Brandy!');
+                            motionBtn.textContent = ' Motion ON';
+                            console.log('Motion enabled');
+                            alert(' Motion enabled!\n\nShake your phone to surprise Brandy!');
                         } catch (error) {
                             console.error('Motion error:', error);
                             alert('Motion failed: ' + error.message);
@@ -269,7 +269,7 @@
                 
                 motionBtn.addEventListener('touchstart', handleMotion, { passive: false });
                 motionBtn.addEventListener('click', handleMotion);
-                console.log('✅ Motion button ready');
+                console.log('Motion button ready');
             }
             
             // Help button
@@ -309,10 +309,10 @@ TIPS:
                 
                 helpBtn.addEventListener('touchstart', handleHelp, { passive: false });
                 helpBtn.addEventListener('click', handleHelp);
-                console.log('✅ Help button ready');
+                console.log('Help button ready');
             }
             
-            console.log('✅ All mobile controls initialized');
+            console.log('All mobile controls initialized');
         }
     </script>
 </body>
