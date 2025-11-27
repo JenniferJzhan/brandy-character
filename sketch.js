@@ -30,7 +30,7 @@
 // function preload() {
 //     // Try to load Brandy sprite - if it exists
 //     // If not, will use procedural graphics
-//     brandySprite = loadImage('brandy.png', 
+//     brandySprite = loadImage('brandy.PNG', 
 //         () => console.log('Sprite loaded'),
 //         () => console.log('No sprite found, using procedural graphics')
 //     );
@@ -91,8 +91,8 @@
 //     // Draw behavior system (speech bubbles, etc)
 //     behaviorSystem.draw();
     
-//     // Draw input debug visualization if camera is enabled
-//     if (debugMode) {
+//     // Draw camera feed (always visible when camera is on)
+//     if (inputHandler.cameraEnabled) {
 //         inputHandler.drawDebug();
 //     }
     
@@ -329,10 +329,10 @@
 // /**
 //  * P5.js preload (if needed for assets)
 //  */
-// function preload() {
-//     // Load any sprites, images, or sounds here
-//     // For now, we're using procedural graphics
-// }
+// // function preload() {
+// //     // Load any sprites, images, or sounds here
+// //     // For now, we're using procedural graphics
+// // }
 
 // // Prevent default touch behavior on mobile
 // document.addEventListener('touchmove', function(e) {
@@ -354,6 +354,11 @@
 // Press 'H' for controls
 // Tap to interact!
 // `);
+
+
+
+
+
 
 
 
@@ -387,12 +392,14 @@ let backgroundGradientEnd;
  * P5.js Preload - load assets before setup
  */
 function preload() {
-    // Try to load Brandy sprite - if it exists
-    // If not, will use procedural graphics
-    brandySprite = loadImage('brandy.png', 
+    // Sprite loading disabled - using procedural graphics
+    // Uncomment below to use sprite image instead:
+    /*
+    brandySprite = loadImage('brandy.PNG', 
         () => console.log('Sprite loaded'),
         () => console.log('No sprite found, using procedural graphics')
     );
+    */
 }
 
 /**
@@ -685,14 +692,6 @@ Hand gestures - Camera tracking (if enabled)
     `);
 }
 
-/**
- * P5.js preload (if needed for assets)
- */
-function preload() {
-    // Load any sprites, images, or sounds here
-    // For now, we're using procedural graphics
-}
-
 // Prevent default touch behavior on mobile
 document.addEventListener('touchmove', function(e) {
     e.preventDefault();
@@ -705,10 +704,10 @@ document.addEventListener('gesturestart', function(e) {
 
 // Initial setup message
 console.log(`
-╔═══════════════════════════════════╗
-║   BRANDY - Interactive Character   ║
-║   Ragdoll Cat • Age 18 • ENTP     ║
-╚═══════════════════════════════════╝
+â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+â•‘   BRANDY - Interactive Character   â•‘
+â•‘   Ragdoll Cat â€¢ Age 18 â€¢ ENTP     â•‘
+â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 Press 'H' for controls
 Tap to interact!
